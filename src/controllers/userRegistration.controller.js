@@ -95,16 +95,25 @@ const editUserById = async (req, res) => {
       userName: body.userName || existingUser.userName,
       email: body.email || existingUser.email,
       image: file?.filename || existingUser.image,
+      password:body.password || existingUser.password
     };
+    console.log(updateData);
+    
 
+    // If password is provided, hash it and send plain password in email
     if (body.password && body.password.trim() !== "") {
-      updateData.password = await bcrypt.hash(body.password, 10);
+      const hashedPassword = await bcrypt.hash(body.password, 10);
+      updateData.password = hashedPassword;
 
       const htmlContent = `
-        <p>Your password has been updated, ${updateData.userName}.</p>
+        <h3>Password Updated</h3>
+        <p>Hello <strong>${updateData.userName}</strong>,</p>
+        <p>Your password has been successfully updated.</p>
         <p><strong>Email:</strong> ${updateData.email}</p>
         <p><strong>New Password:</strong> ${body.password}</p>
+        <p>If you did not request this change, please contact support immediately.</p>
       `;
+
       await sendMailToUser(updateData.email, htmlContent, updateData.userName);
     }
 
@@ -114,6 +123,7 @@ const editUserById = async (req, res) => {
 
     res.status(200).json(updatedUser);
   } catch (error) {
+    console.error("Error updating user:", error);
     res.status(500).json({ error: error.message });
   }
 };
