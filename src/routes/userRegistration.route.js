@@ -9,7 +9,7 @@ router.get("/allUserData", controller.getUserData);
 router.put("/edit/:id", singleupload, controller.editUserById);
 router.delete("/delete/:id", controller.deleteUserById);
 
-// ✅ Forgot password routes
+
 router.post("/forgot-password", controller.forgotPassword);
 router.post("/reset-password/:id/:token", controller.resetPassword);
 

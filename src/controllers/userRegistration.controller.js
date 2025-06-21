@@ -100,7 +100,7 @@ const editUserById = async (req, res) => {
     console.log(updateData);
     
 
-    // If password is provided, hash it and send plain password in email
+   
     if (body.password && body.password.trim() !== "") {
       const hashedPassword = await bcrypt.hash(body.password, 10);
       updateData.password = hashedPassword;
