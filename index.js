@@ -1,20 +1,31 @@
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
-const dotenv = require("dotenv");
+const path = require("path");
+require("dotenv").config();
+
 const connection = require("./src/config/connection");
 const productRouter = require("./src/routes/product.route");
 const registrationRouter = require("./src/routes/userRegistration.route");
 
-dotenv.config();
-
 const app = express();
-const port = process.env.PORT || 8000;
+const port =process.env.PORT || 9000;
 
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:3000",
+  credentials: true,
+}));
+
 app.use(helmet());
 app.use(express.json());
-app.use("/uploads", express.static("src/upload"));
+app.use(express.urlencoded({ extended: true }));
+
+app.use("/uploads", express.static(path.join(__dirname, "src/uploads"), {
+  setHeaders: (res, path) => {
+    res.set('Cross-Origin-Resource-Policy', 'cross-origin');
+    res.set('Cache-Control', 'no-cache');
+  }
+}));
 
 connection();
 

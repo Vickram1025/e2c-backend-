@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const controller = require("../controllers/userRegistration.controller");
-const singleupload = require("../middelwar/multer");
+const singleupload = require("../middlewares/multer");
 
 router.post("/createuser", singleupload, controller.registrationUser);
 router.post("/signin", controller.signin);
