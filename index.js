@@ -25,7 +25,7 @@ app.use("/uploads", express.static(path.join(__dirname, "src/uploads"), {
     res.set('Cross-Origin-Resource-Policy', 'cross-origin');
     res.set('Cache-Control', 'no-cache');
   }
-}));
+}));     
 
 connection();
 

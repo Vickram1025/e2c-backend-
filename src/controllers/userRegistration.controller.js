@@ -12,7 +12,7 @@ const registrationUser = async (req, res) => {
   try {
     const { body, file } = req;
 
-    if (!file) return res.status(400).json({ message: "Image is required" });
+    
 
     const checkMail = await userRegistration.findOne({ email: body.email });
     if (checkMail) return res.status(409).json({ message: "Email ID already exists" });
@@ -49,14 +49,16 @@ const signin = async (req, res) => {
   try {
     const userData = req.body;
     const findMail = await userRegistration.findOne({ email: userData.email });
-    console.log(findMail);
+   
     
     if (!findMail) return res.status(404).json({ message: "User not registered" });
 
     const findPassword = await bcrypt.compare(userData.password, findMail.password);
-    console.log(findPassword,userData.password, findMail.password);
+  
     
     if (!findPassword) return res.status(401).json({ message: "Incorrect password" });
+    console.log(findMail);
+    
 
     res.status(200).json({
       user: {
@@ -65,7 +67,10 @@ const signin = async (req, res) => {
         email: findMail.email,
         image: findMail.image,
       },
+      
+      
     });
+    console.log("successfully login ");
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -128,20 +133,34 @@ const editUserById = async (req, res) => {
 };
 
 
+
 const deleteUserById = async (req, res) => {
   try {
     const { id } = req.params;
     const deletedUser = await userRegistration.findByIdAndDelete(id);
-    if (!deletedUser) return res.status(404).json({ message: "User not found" });
 
-    const imagePath = path.join(__dirname, "../uploads", deletedUser.image);
-    if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
+    if (!deletedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (deletedUser.image) {
+      const imagePath = path.join(__dirname, "../uploads", deletedUser.image);
+      console.log("Deleting file at:", imagePath);
+
+      if (fs.existsSync(imagePath)) {
+        fs.unlinkSync(imagePath);
+        console.log("Image deleted successfully");
+      } else {
+        console.log("No image file found to delete.");
+      }
+    }
 
     res.status(200).json({ message: "User deleted successfully", deletedUser });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 
 const forgotPassword = async (req, res) => {
